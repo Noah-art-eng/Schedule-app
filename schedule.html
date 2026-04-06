@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作日程安排</title>
+  <style>
+    :root {
+      --bg: #f3f6fc;
+      --surface: #ffffff;
+      --surface-soft: #f8faff;
+      --text: #1f2a44;
+      --muted: #6c7a96;
+      --line: #dde6f5;
+      --primary: #4f7ff0;
+      --primary-soft: #e8efff;
+      --success: #1ea672;
+      --danger: #d9534f;
+      --today-ring: #8fb0fb;
+      --shadow: 0 14px 35px rgba(33, 58, 102, 0.12);
+    }
+
+    html[data-theme="dark"] {
+      --bg: #121927;
+      --surface: #1a2335;
+      --surface-soft: #202c42;
+      --text: #e8edf7;
+      --muted: #9ca8bf;
+      --line: #2f3b53;
+      --primary: #7ea3ff;
+      --primary-soft: #2b3e69;
+      --success: #37c68f;
+      --danger: #f47c78;
+      --today-ring: #95b2ff;
+      --shadow: 0 18px 40px rgba(2, 6, 18, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at 15% 10%, rgba(79, 127, 240, 0.16), transparent 35%), var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: background 0.3s ease;
+    }
+
+    .app {
+      width: min(1080px, 100%);
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      border: 1px solid var(--line);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .title-group h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: 0.5px;
+    }
+
+    .title-group p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 12px;
+      height: 38px;
+      padding: 0 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--primary);
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn.primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .calendar-panel {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .calendar-head {
+      display: grid;
+      grid-template-columns: 130px 1fr 130px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .month-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .week-row,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+
+    .week-cell {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 0;
+      font-weight: 700;
+    }
+
+    .calendar-grid {
+      border: 1px solid var(--line);
+      border-right: none;
+      border-bottom: none;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .day-cell {
+      min-height: 120px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      padding: 8px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .day-cell:hover {
+      transform: translateY(-1px);
+      background: color-mix(in srgb, var(--primary-soft) 50%, var(--surface));
+    }
+
+    .day-cell.other-month {
+      opacity: 0.6;
+    }
+
+    .day-cell.active {
+      outline: 2px solid var(--primary);
+      outline-offset: -2px;
+    }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .day-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .day-number.today {
+      background: color-mix(in srgb, var(--today-ring) 18%, transparent);
+      box-shadow: inset 0 0 0 1px var(--today-ring);
+      color: var(--primary);
+    }
+
+    .task-count {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .cell-task-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cell-task-item {
+      border-radius: 8px;
+      padding: 4px 6px;
+      font-size: 11px;
+      background: var(--primary-soft);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot.work { background: #3f7df0; }
+    .dot.study { background: #8a5cf5; }
+    .dot.life { background: #21b383; }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 20, 38, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 999;
+    }
+
+    .modal-mask.show {
+      display: flex;
+    }
+
+    .drawer {
+      width: min(640px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transform: translateY(8px);
+      opacity: 0.95;
+      animation: drawer-in 0.18s ease forwards;
+    }
+
+    @keyframes drawer-in {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .drawer-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .drawer-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .drawer-body {
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 150px;
+      gap: 10px;
+    }
+
+    .input,
+    .select {
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 10px;
+      font-size: 14px;
+    }
+
+    .task-list {
+      max-height: 280px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .task-card {
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .task-card.done .task-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .task-text {
+      margin: 0;
+      font-size: 14px;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    .task-meta {
+      margin-top: 5px;
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      background: var(--primary-soft);
+      color: var(--text);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .icon-btn.danger:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .editor {
+      border-top: 1px dashed var(--line);
+      padding-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 120px auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .editor .input {
+      width: 100%;
+    }
+
+    .drawer-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .app {
+        padding: 16px;
+      }
+
+      .calendar-head {
+        grid-template-columns: 1fr;
+      }
+
+      .month-title {
+        order: -1;
+      }
+
+      .filters,
+      .editor {
+        grid-template-columns: 1fr;
+      }
+
+      .day-cell {
+        min-height: 106px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="title-group">
+        <h1 id="appTitle"></h1>
+        <p id="appSubtitle"></p>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="langToggleBtn"></button>
+        <button class="btn" id="themeToggleBtn"></button>
+      </div>
+    </header>
+
+    <section class="calendar-panel">
+      <div class="calendar-head">
+        <button class="btn" id="prevMonthBtn"></button>
+        <div class="month-title" id="monthText"></div>
+        <button class="btn" id="nextMonthBtn"></button>
+      </div>
+      <div class="week-row" id="weekRow"></div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </section>
+  </main>
+
+  <div class="modal-mask" id="taskPanelMask">
+    <section class="drawer" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+      <div class="drawer-header">
+        <h2 id="panelTitle"></h2>
+        <button class="icon-btn" id="closePanelBtn">×</button>
+      </div>
+      <div class="drawer-body">
+        <div class="filters">
+          <input id="searchInput" class="input" type="text" />
+          <select id="statusFilter" class="select">
+            <option value="all"></option>
+            <option value="todo"></option>
+            <option value="done"></option>
+          </select>
+        </div>
+
+        <div class="task-list" id="taskList"></div>
+
+        <div class="editor">
+          <input id="taskInput" class="input" type="text" />
+          <select id="categorySelect" class="select">
+            <option value="work"></option>
+            <option value="study"></option>
+            <option value="life"></option>
+          </select>
+          <button class="btn primary" id="saveTaskBtn"></button>
+        </div>
+
+        <div class="drawer-footer">
+          <button class="btn" id="cancelEditBtn"></button>
+          <button class="btn" id="closeDrawerBtn"></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "schedule_project_v2";
+
+    const i18n = {
+      zh: {
+        pageTitle: "工作日程安排",
+        subtitle: "轻量、直观、可本地持久化的日程面板",
+        prevMonth: "上个月",
+        nextMonth: "下个月",
+        languageSwitch: "English",
+        themeLight: "深色模式",
+        themeDark: "浅色模式",
+        panelTitle: "任务 - {date}",
+        searchPlaceholder: "搜索任务内容...",
+        statusAll: "全部状态",
+        statusTodo: "未完成",
+        statusDone: "已完成",
+        taskPlaceholder: "输入任务内容并回车或点击保存",
+        saveTask: "添加任务",
+        updateTask: "保存修改",
+        cancelEdit: "取消编辑",
+        close: "关闭",
+        empty: "暂无任务，添加一个开始吧。",
+        count: "{done}/{total} 已完成",
+        work: "工作",
+        study: "学习",
+        life: "生活",
+        deleted: "删除",
+        edit: "编辑"
+      },
+      en: {
+        pageTitle: "Work Schedule Planner",
+        subtitle: "A lightweight local-first calendar task board",
+        prevMonth: "Previous",
+        nextMonth: "Next",
+        languageSwitch: "中文",
+        themeLight: "Dark mode",
+        themeDark: "Light mode",
+        panelTitle: "Tasks - {date}",
+        searchPlaceholder: "Search tasks...",
+        statusAll: "All status",
+        statusTodo: "Todo",
+        statusDone: "Done",
+        taskPlaceholder: "Type a task and press Enter or Save",
+        saveTask: "Add Task",
+        updateTask: "Update Task",
+        cancelEdit: "Cancel Edit",
+        close: "Close",
+        empty: "No tasks yet. Add your first one.",
+        count: "{done}/{total} done",
+        work: "Work",
+        study: "Study",
+        life: "Life",
+        deleted: "Delete",
+        edit: "Edit"
+      }
+    };
+
+    const CATEGORY_ORDER = ["work", "study", "life"];
+
+    const appState = {
+      version: 2,
+      language: "zh",
+      theme: "light",
+      tasksByDate: {},
+      viewingDate: new Date(),
+      selectedDateKey: null,
+      editingTaskId: null
+    };
+
+    const dom = {
+      appTitle: document.getElementById("appTitle"),
+      appSubtitle: document.getElementById("appSubtitle"),
+      langToggleBtn: document.getElementById("langToggleBtn"),
+      themeToggleBtn: document.getElementById("themeToggleBtn"),
+      prevMonthBtn: document.getElementById("prevMonthBtn"),
+      nextMonthBtn: document.getElementById("nextMonthBtn"),
+      monthText: document.getElementById("monthText"),
+      weekRow: document.getElementById("weekRow"),
+      calendarGrid: document.getElementById("calendarGrid"),
+      taskPanelMask: document.getElementById("taskPanelMask"),
+      panelTitle: document.getElementById("panelTitle"),
+      closePanelBtn: document.getElementById("closePanelBtn"),
+      searchInput: document.getElementById("searchInput"),
+      statusFilter: document.getElementById("statusFilter"),
+      taskList: document.getElementById("taskList"),
+      taskInput: document.getElementById("taskInput"),
+      categorySelect: document.getElementById("categorySelect"),
+      saveTaskBtn: document.getElementById("saveTaskBtn"),
+      cancelEditBtn: document.getElementById("cancelEditBtn"),
+      closeDrawerBtn: document.getElementById("closeDrawerBtn")
+    };
+
+    function t(key, vars = {}) {
+      const dict = i18n[appState.language] || i18n.zh;
+      const text = dict[key] || key;
+      return Object.keys(vars).reduce((acc, itemKey) => {
+        return acc.replace(`{${itemKey}}`, String(vars[itemKey]));
+      }, text);
+    }
+
+    function dateToKey(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function uid() {
+      return `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function parseStateFromStorage() {
+      const fallback = {
+        version: 2,
+        language: "zh",
+        theme: "light",
+        tasksByDate: {}
+      };
+
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+
+        if (!parsed || typeof parsed !== "object") return fallback;
+
+        return {
+          version: 2,
+          language: parsed.language === "en" ? "en" : "zh",
+          theme: parsed.theme === "dark" ? "dark" : "light",
+          tasksByDate: normalizeTaskMap(parsed.tasksByDate || parsed.schedules || {})
+        };
+      } catch (error) {
+        console.warn("Failed to parse local data, fallback used.", error);
+        return fallback;
+      }
+    }
+
+    function normalizeTaskMap(rawMap) {
+      const safeMap = {};
+      if (!rawMap || typeof rawMap !== "object") return safeMap;
+
+      Object.keys(rawMap).forEach((dateKey) => {
+        const value = rawMap[dateKey];
+        if (Array.isArray(value)) {
+          const normalized = value
+            .filter((item) => item && typeof item === "object")
+            .map((item) => ({
+              id: typeof item.id === "string" ? item.id : uid(),
+              text: typeof item.text === "string" ? item.text.trim() : "",
+              done: Boolean(item.done),
+              category: CATEGORY_ORDER.includes(item.category) ? item.category : "work"
+            }))
+            .filter((item) => item.text);
+
+          if (normalized.length) safeMap[dateKey] = normalized;
+        } else if (typeof value === "string" && value.trim()) {
+          safeMap[dateKey] = [{
+            id: uid(),
+            text: value.trim(),
+            done: false,
+            category: "work"
+          }];
+        }
+      });
+
+      return safeMap;
+    }
+
+    function persistState() {
+      const payload = {
+        version: 2,
+        language: appState.language,
+        theme: appState.theme,
+        tasksByDate: appState.tasksByDate
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }
+
+    function applyTheme() {
+      document.documentElement.setAttribute("data-theme", appState.theme);
+      dom.themeToggleBtn.textContent = appState.theme === "light" ? t("themeLight") : t("themeDark");
+    }
+
+    function getWeekDays() {
+      return appState.language === "zh"
+        ? ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+        : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    }
+
+    function renderWeekHeader() {
+      dom.weekRow.innerHTML = "";
+      getWeekDays().forEach((dayName) => {
+        const cell = document.createElement("div");
+        cell.className = "week-cell";
+        cell.textContent = dayName;
+        dom.weekRow.appendChild(cell);
+      });
+    }
+
+    function monthLabel(dateObj) {
+      const locale = appState.language === "zh" ? "zh-CN" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
+        year: "numeric",
+        month: "long"
+      }).format(dateObj);
+    }
+
+    function getTasksByDate(dateKey) {
+      return appState.tasksByDate[dateKey] || [];
+    }
+
+    function renderCalendar() {
+      const year = appState.viewingDate.getFullYear();
+      const month = appState.viewingDate.getMonth();
+      const firstDate = new Date(year, month, 1);
+      const monthDays = new Date(year, month + 1, 0).getDate();
+      const prevMonthDays = new Date(year, month, 0).getDate();
+      const firstWeekdayMonStart = (firstDate.getDay() + 6) % 7;
+      const today = new Date();
+
+      dom.monthText.textContent = monthLabel(appState.viewingDate);
+      dom.calendarGrid.innerHTML = "";
+
+      for (let i = 0; i < 42; i += 1) {
+        const dayCell = document.createElement("div");
+        dayCell.className = "day-cell";
+
+        let dayNum = 1;
+        let cellDate = null;
+
+        if (i < firstWeekdayMonStart) {
+          dayNum = prevMonthDays - firstWeekdayMonStart + i + 1;
+          cellDate = new Date(year, month - 1, dayNum);
+          dayCell.classList.add("other-month");
+        } else if (i < firstWeekdayMonStart + monthDays) {
+          dayNum = i - firstWeekdayMonStart + 1;
+          cellDate = new Date(year, month, dayNum);
+        } else {
+          dayNum = i - (firstWeekdayMonStart + monthDays) + 1;
+          cellDate = new Date(year, month + 1, dayNum);
+          dayCell.classList.add("other-month");
+        }
+
+        const dateKey = dateToKey(cellDate);
+        const tasks = getTasksByDate(dateKey);
+        const doneCount = tasks.filter((task) => task.done).length;
+
+        const dayHeader = document.createElement("div");
+        dayHeader.className = "day-header";
+
+        const dayNumber = document.createElement("span");
+        dayNumber.className = "day-number";
+        if (
+          today.getFullYear() === cellDate.getFullYear() &&
+          today.getMonth() === cellDate.getMonth() &&
+          today.getDate() === cellDate.getDate()
+        ) {
+          dayNumber.classList.add("today");
+        }
+        dayNumber.textContent = String(dayNum);
+
+        const taskCount = document.createElement("span");
+        taskCount.className = "task-count";
+        taskCount.textContent = tasks.length ? t("count", { done: doneCount, total: tasks.length }) : "";
+
+        dayHeader.append(dayNumber, taskCount);
+        dayCell.appendChild(dayHeader);
+
+        const taskPreviewList = document.createElement("ul");
+        taskPreviewList.className = "cell-task-list";
+
+        tasks.slice(0, 3).forEach((task) => {
+          const li = document.createElement("li");
+          li.className = "cell-task-item";
+          li.title = task.text;
+          li.innerHTML = `<span class="dot ${task.category}"></span>${task.done ? "✓ " : ""}${task.text}`;
+          taskPreviewList.appendChild(li);
+        });
+
+        if (tasks.length > 3) {
+          const more = document.createElement("li");
+          more.className = "cell-task-item";
+          more.textContent = `+${tasks.length - 3}`;
+          taskPreviewList.appendChild(more);
+        }
+        dayCell.appendChild(taskPreviewList);
+
+        if (appState.selectedDateKey === dateKey) {
+          dayCell.classList.add("active");
+        }
+
+        dayCell.addEventListener("click", () => openTaskPanel(dateKey));
+        dom.calendarGrid.appendChild(dayCell);
+      }
+    }
+
+    function formatPanelDate(dateKey) {
+      const dateObj = new Date(`${dateKey}T00:00:00`);
+      const locale = appState.language === "zh" ? "zh-CN" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        weekday: "short"
+      }).format(dateObj);
+    }
+
+    function resetEditor() {
+      appState.editingTaskId = null;
+      dom.taskInput.value = "";
+      dom.categorySelect.value = "work";
+      dom.saveTaskBtn.textContent = t("saveTask");
+    }
+
+    function openTaskPanel(dateKey) {
+      appState.selectedDateKey = dateKey;
+      dom.taskPanelMask.classList.add("show");
+      renderCalendar();
+      renderTaskPanel();
+      setTimeout(() => dom.taskInput.focus(), 0);
+    }
+
+    function closeTaskPanel() {
+      dom.taskPanelMask.classList.remove("show");
+      dom.searchInput.value = "";
+      dom.statusFilter.value = "all";
+      appState.selectedDateKey = null;
+      resetEditor();
+      renderCalendar();
+    }
+
+    function getFilteredTasks() {
+      const selectedDate = appState.selectedDateKey;
+      const all = getTasksByDate(selectedDate);
+      const keyword = dom.searchInput.value.trim().toLowerCase();
+      const status = dom.statusFilter.value;
+
+      return all.filter((task) => {
+        const matchKeyword = !keyword || task.text.toLowerCase().includes(keyword);
+        const matchStatus =
+          status === "all" ||
+          (status === "done" && task.done) ||
+          (status === "todo" && !task.done);
+        return matchKeyword && matchStatus;
+      });
+    }
+
+    function renderTaskPanel() {
+      const selectedDate = appState.selectedDateKey;
+      if (!selectedDate) return;
+
+      dom.panelTitle.textContent = t("panelTitle", { date: formatPanelDate(selectedDate) });
+      dom.taskList.innerHTML = "";
+
+      const taskItems = getFilteredTasks();
+      if (!taskItems.length) {
+        const emptyEl = document.createElement("div");
+        emptyEl.className = "empty";
+        emptyEl.textContent = t("empty");
+        dom.taskList.appendChild(emptyEl);
+      } else {
+        taskItems.forEach((task) => {
+          const card = document.createElement("div");
+          card.className = `task-card ${task.done ? "done" : ""}`;
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = task.done;
+          checkbox.addEventListener("change", () => toggleTaskDone(task.id));
+
+          const content = document.createElement("div");
+          content.innerHTML = `<p class="task-text">${escapeHtml(task.text)}</p><span class="task-meta">${t(task.category)}</span>`;
+
+          const actions = document.createElement("div");
+          actions.className = "task-actions";
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "icon-btn";
+          editBtn.title = t("edit");
+          editBtn.textContent = "✎";
+          editBtn.addEventListener("click", () => startEditTask(task.id));
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "icon-btn danger";
+          delBtn.title = t("deleted");
+          delBtn.textContent = "🗑";
+          delBtn.addEventListener("click", () => removeTask(task.id));
+
+          actions.append(editBtn, delBtn);
+          card.append(checkbox, content, actions);
+          dom.taskList.appendChild(card);
+        });
+      }
+
+      dom.cancelEditBtn.style.visibility = appState.editingTaskId ? "visible" : "hidden";
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function upsertTask() {
+      const selectedDate = appState.selectedDateKey;
+      if (!selectedDate) return;
+
+      const text = dom.taskInput.value.trim();
+      if (!text) return;
+
+      const category = CATEGORY_ORDER.includes(dom.categorySelect.value)
+        ? dom.categorySelect.value
+        : "work";
+
+      const tasks = getTasksByDate(selectedDate);
+
+      if (appState.editingTaskId) {
+        const target = tasks.find((item) => item.id === appState.editingTaskId);
+        if (target) {
+          target.text = text;
+          target.category = category;
+        }
+      } else {
+        tasks.push({
+          id: uid(),
+          text,
+          done: false,
+          category
+        });
+      }
+
+      appState.tasksByDate[selectedDate] = tasks;
+      persistState();
+      resetEditor();
+      renderTaskPanel();
+      renderCalendar();
+    }
+
+    function startEditTask(taskId) {
+      const selectedDate = appState.selectedDateKey;
+      const tasks = getTasksByDate(selectedDate);
+      const target = tasks.find((item) => item.id === taskId);
+      if (!target) return;
+
+      appState.editingTaskId = taskId;
+      dom.taskInput.value = target.text;
+      dom.categorySelect.value = target.category;
+      dom.saveTaskBtn.textContent = t("updateTask");
+      dom.taskInput.focus();
+    }
+
+    function removeTask(taskId) {
+      const selectedDate = appState.selectedDateKey;
+      const tasks = getTasksByDate(selectedDate);
+      const next = tasks.filter((item) => item.id !== taskId);
+
+      if (next.length) {
+        appState.tasksByDate[selectedDate] = next;
+      } else {
+        delete appState.tasksByDate[selectedDate];
+      }
+
+      if (appState.editingTaskId === taskId) resetEditor();
+      persistState();
+      renderTaskPanel();
+      renderCalendar();
+    }
+
+    function toggleTaskDone(taskId) {
+      const selectedDate = appState.selectedDateKey;
+      const tasks = getTasksByDate(selectedDate);
+      const target = tasks.find((item) => item.id === taskId);
+      if (!target) return;
+      target.done = !target.done;
+      persistState();
+      renderTaskPanel();
+      renderCalendar();
+    }
+
+    function renderStaticTexts() {
+      document.title = t("pageTitle");
+      dom.appTitle.textContent = t("pageTitle");
+      dom.appSubtitle.textContent = t("subtitle");
+      dom.prevMonthBtn.textContent = t("prevMonth");
+      dom.nextMonthBtn.textContent = t("nextMonth");
+      dom.langToggleBtn.textContent = t("languageSwitch");
+      dom.searchInput.placeholder = t("searchPlaceholder");
+      dom.taskInput.placeholder = t("taskPlaceholder");
+      dom.saveTaskBtn.textContent = appState.editingTaskId ? t("updateTask") : t("saveTask");
+      dom.cancelEditBtn.textContent = t("cancelEdit");
+      dom.closeDrawerBtn.textContent = t("close");
+
+      dom.statusFilter.options[0].text = t("statusAll");
+      dom.statusFilter.options[1].text = t("statusTodo");
+      dom.statusFilter.options[2].text = t("statusDone");
+
+      dom.categorySelect.options[0].text = t("work");
+      dom.categorySelect.options[1].text = t("study");
+      dom.categorySelect.options[2].text = t("life");
+
+      applyTheme();
+      renderWeekHeader();
+      renderCalendar();
+      renderTaskPanel();
+    }
+
+    function bindEvents() {
+      dom.prevMonthBtn.addEventListener("click", () => {
+        const y = appState.viewingDate.getFullYear();
+        const m = appState.viewingDate.getMonth();
+        appState.viewingDate = new Date(y, m - 1, 1);
+        renderCalendar();
+      });
+
+      dom.nextMonthBtn.addEventListener("click", () => {
+        const y = appState.viewingDate.getFullYear();
+        const m = appState.viewingDate.getMonth();
+        appState.viewingDate = new Date(y, m + 1, 1);
+        renderCalendar();
+      });
+
+      dom.langToggleBtn.addEventListener("click", () => {
+        appState.language = appState.language === "zh" ? "en" : "zh";
+        persistState();
+        renderStaticTexts();
+      });
+
+      dom.themeToggleBtn.addEventListener("click", () => {
+        appState.theme = appState.theme === "light" ? "dark" : "light";
+        persistState();
+        applyTheme();
+      });
+
+      dom.saveTaskBtn.addEventListener("click", upsertTask);
+      dom.taskInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          upsertTask();
+        }
+      });
+
+      dom.cancelEditBtn.addEventListener("click", () => {
+        resetEditor();
+        renderTaskPanel();
+      });
+
+      dom.searchInput.addEventListener("input", renderTaskPanel);
+      dom.statusFilter.addEventListener("change", renderTaskPanel);
+      dom.closePanelBtn.addEventListener("click", closeTaskPanel);
+      dom.closeDrawerBtn.addEventListener("click", closeTaskPanel);
+
+      dom.taskPanelMask.addEventListener("click", (event) => {
+        if (event.target === dom.taskPanelMask) closeTaskPanel();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && dom.taskPanelMask.classList.contains("show")) {
+          closeTaskPanel();
+        }
+      });
+    }
+
+    function init() {
+      const localData = parseStateFromStorage();
+      appState.language = localData.language;
+      appState.theme = localData.theme;
+      appState.tasksByDate = localData.tasksByDate;
+      bindEvents();
+      renderStaticTexts();
+    }
+
+    init();
+  </script>
+</body>
+</html>
