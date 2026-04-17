@@ -43,6 +43,24 @@ No dependencies, no build tools, and no backend required.
 - **Built-in i18n + theme system**: language and theme preferences are saved across refreshes
 - **Product-style UX in pure JavaScript**: no framework, but structured and maintainable code
 
+## Feature Screenshots
+
+Replace your previous project screenshots with the 3-4 focused feature images below.
+
+### 1) Calendar Overview
+![Calendar Overview](assets/screenshots/01-calendar-overview.png)
+
+### 2) Daily Task Panel
+![Daily Task Panel](assets/screenshots/02-task-panel.png)
+
+### 3) Task Management (Edit / Complete / Filter)
+![Task Management](assets/screenshots/03-task-management.png)
+
+### 4) Theme & Language Switch
+![Theme and Language](assets/screenshots/04-theme-language.png)
+
+> Recommended: keep all images in `assets/screenshots/` and use a consistent size (for example 1600×900) for a cleaner GitHub presentation.
+
 ## Future Improvements
 
 - Drag-and-drop task ordering
