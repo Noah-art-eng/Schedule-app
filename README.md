@@ -7,7 +7,9 @@ Designed as a **portfolio-ready frontend project** with clean UI, practical feat
 
 ## 🔗 Live Demo
 
-[Open the live demo](https://noah-art-eng.github.io/Schedule-app/)
+[Open the live demo](https://noah-art-eng.github.io/Schedule-app/schedule.html)
+
+> If the link returns 404, enable GitHub Pages in repository settings (Deploy from `main` branch).
 
 ---
 
@@ -76,7 +78,7 @@ It focuses on:
 
 ## Project Structure
 
-- `index.html` — main application file
+- `schedule.html` — main application file
 - `README.md` — project documentation
 - `1.png / 2.png / 3.png / 4.png` — project screenshots
 
@@ -85,7 +87,7 @@ It focuses on:
 ## How to Run
 
 1. Clone or download this repository
-2. Open `index.html` directly in your browser
+2. Open `schedule.html` directly in your browser
 3. Click any date to start managing tasks
 
 No dependencies, no build tools, and no backend required.
