@@ -17,9 +17,6 @@ Designed as a **portfolio-ready frontend project** with clean UI, practical feat
 
 ![Task Panel](./2.png)
 
-![Task Management](./3.png)
-
-![Theme and Language](./4.png)
 
 ---
 
