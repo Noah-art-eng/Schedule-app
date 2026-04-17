@@ -1,71 +1,118 @@
-# Work Schedule Planner
+# 📅 Work Schedule Planner
 
-A polished, single-file calendar task planner built with **vanilla HTML, CSS, and JavaScript**.  
-This project is designed as a portfolio-ready frontend showcase: clean UI, practical features, and zero setup.
+A polished, browser-based calendar task planner built with **vanilla HTML, CSS, and JavaScript**.  
+Designed as a **portfolio-ready frontend project** with clean UI, practical features, and zero setup.
 
-## Project Introduction
+---
 
-Work Schedule Planner is a local-first monthly calendar app for managing day-level tasks.  
-It focuses on usability and presentation quality while keeping the architecture simple and dependency-free.
+## 🔗 Live Demo
+
+[Open the live demo](https://noah-art-eng.github.io/Schedule-app/)
+
+---
+
+## 🖼️ Preview
+
+![Calendar Overview](./1.png)
+
+![Task Panel](./2.png)
+
+![Task Management](./3.png)
+
+![Theme and Language](./4.png)
+
+---
+
+## ✨ Highlights
+
+- Clean and modern **calendar-based UI**
+- Interactive **task management workflow**
+- **Persistent storage** with `localStorage`
+- Built with **pure JavaScript** and no frameworks
+- Lightweight, fast, and easy to run locally
+
+---
+
+## 📌 Project Overview
+
+Work Schedule Planner is a **local-first monthly calendar app** for managing day-level tasks.
+
+It focuses on:
+
+- usability and simplicity
+- clean visual presentation
+- structured frontend logic
+- dependency-free architecture
+
+---
 
 ## Features
 
-- Monthly calendar view (7x6 grid) with previous/next month navigation
-- Multi-task support for each day
-- Task completion toggle (done / todo)
-- Task editing and deletion
-- Task search and status filtering
-- Task categories: Work / Study / Life
-- Dark mode toggle
-- Built-in internationalization (Chinese / English)
+- Monthly calendar view (7×6 grid) with previous / next month navigation
+- Click any date to open a task panel
+- Add, complete, edit, and delete tasks
+- Search tasks and filter by status
+- Task categories: **Work / Study / Life**
+- Built-in **Dark mode**
+- Built-in **Chinese / English** language switch
 - Persistent local data storage via `localStorage`
+
+---
+
+## Usage
+
+- Click a date cell to open the task panel
+- Type a task and press **Enter** or click **Add Task**
+- Mark tasks as done or todo
+- Use search and status filters to manage tasks more easily
+- Switch theme and language from the top-right controls
+
+---
 
 ## Tech Stack
 
-- **HTML5** for semantic structure
-- **CSS3** for layout, theming, animations, and responsive UI
-- **Vanilla JavaScript** for state management, DOM rendering, and i18n
-- **localStorage** for client-side persistence
+- **HTML5** — semantic page structure
+- **CSS3** — layout, theming, responsive UI, and visual polish
+- **Vanilla JavaScript** — state management, DOM rendering, and i18n logic
+- **localStorage** — client-side persistence
+
+---
+
+## Project Structure
+
+- `schedule.html` — main application file
+- `README.md` — project documentation
+- `1.png / 2.png / 3.png / 4.png` — project screenshots
+
+---
 
 ## How to Run
 
 1. Clone or download this repository
 2. Open `schedule.html` directly in your browser
-3. Click any date cell to add and manage tasks
+3. Click any date to start managing tasks
 
 No dependencies, no build tools, and no backend required.
 
-## Highlights
+---
 
-- **Portfolio-ready UI**: card-based layout, clear visual hierarchy, and smooth interactions
-- **Single-file architecture**: easy to review, deploy, and share
-- **Robust local state model**: supports multiple tasks and safe storage parsing
-- **Built-in i18n + theme system**: language and theme preferences are saved across refreshes
-- **Product-style UX in pure JavaScript**: no framework, but structured and maintainable code
+## 💡 Why This Project
 
-## Feature Screenshots
+This project was built as a **frontend portfolio piece** to demonstrate:
 
-Replace your previous project screenshots with the 3-4 focused feature images below.
+- UI layout and visual hierarchy
+- interactive task management design
+- browser-side state handling without frameworks
+- practical product thinking in a lightweight app
 
-### 1) Calendar Overview
-![Calendar Overview](assets/screenshots/01-calendar-overview.png)
-
-### 2) Daily Task Panel
-![Daily Task Panel](assets/screenshots/02-task-panel.png)
-
-### 3) Task Management (Edit / Complete / Filter)
-![Task Management](assets/screenshots/03-task-management.png)
-
-### 4) Theme & Language Switch
-![Theme and Language](assets/screenshots/04-theme-language.png)
-
-> Recommended: keep all images in `assets/screenshots/` and use a consistent size (for example 1600×900) for a cleaner GitHub presentation.
+---
 
 ## Future Improvements
 
 - Drag-and-drop task ordering
 - Weekly / list view switch
-- Import / export task data (JSON backup)
+- Import / export task data
 - Browser notification reminders
-- Basic productivity analytics (completion rate, category distribution)
+- Basic productivity analytics
 
+---
