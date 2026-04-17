@@ -1,4 +1,4 @@
-# 📅 Work Schedule Planner
+# Work Schedule Planner
 
 A polished, browser-based calendar task planner built with **vanilla HTML, CSS, and JavaScript**.  
 Designed as a **portfolio-ready frontend project** with clean UI, practical features, and zero setup.
@@ -11,16 +11,15 @@ Designed as a **portfolio-ready frontend project** with clean UI, practical feat
 
 ---
 
-## 🖼️ Preview
+## Preview
 
 ![Calendar Overview](./1.png)
 
 ![Task Panel](./2.png)
 
-
 ---
 
-## ✨ Highlights
+## Highlights
 
 - Clean and modern **calendar-based UI**
 - Interactive **task management workflow**
@@ -30,7 +29,7 @@ Designed as a **portfolio-ready frontend project** with clean UI, practical feat
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 Work Schedule Planner is a **local-first monthly calendar app** for managing day-level tasks.
 
@@ -77,7 +76,7 @@ It focuses on:
 
 ## Project Structure
 
-- `schedule.html` — main application file
+- `index.html` — main application file
 - `README.md` — project documentation
 - `1.png / 2.png / 3.png / 4.png` — project screenshots
 
@@ -86,14 +85,14 @@ It focuses on:
 ## How to Run
 
 1. Clone or download this repository
-2. Open `schedule.html` directly in your browser
+2. Open `index.html` directly in your browser
 3. Click any date to start managing tasks
 
 No dependencies, no build tools, and no backend required.
 
 ---
 
-## 💡 Why This Project
+## Why This Project
 
 This project was built as a **frontend portfolio piece** to demonstrate:
 
